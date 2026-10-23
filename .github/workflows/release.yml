@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate changelog
+        uses: ConfiguredThings/validate-changelog-action@v4
+
+      - name: Extract changelog section for this tag
+        id: changelog
+        uses: ConfiguredThings/validate-changelog-action/extract@v4
+        with:
+          version: ${{ github.ref_name }}
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ steps.changelog.outputs.notes }}
+        run: gh release create "${{ github.ref_name }}" --title "${{ github.ref_name }}" --notes "$NOTES"

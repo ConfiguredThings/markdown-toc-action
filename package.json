@@ -1,0 +1,9 @@
+{
+  "name": "markdown-toc-action",
+  "private": true,
+  "description": "Checks that the table of contents of Markdown files is the one VS Code Markdown All in One generates on save",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/check.test.js"
+  }
+}
