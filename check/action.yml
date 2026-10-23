@@ -2,9 +2,9 @@ name: 'Check Markdown table of contents'
 description: 'Checks that the table of contents of Markdown files is the one VS Code Markdown All in One generates on save'
 inputs:
   files:
-    description: 'The Markdown files to check, separated by spaces or new lines'
+    description: 'The Markdown files to check, separated by spaces or new lines. By default, the README in the root of the repository, whatever the case of its name (README.md, ReadMe.md, ...)'
     required: false
-    default: 'README.md'
+    default: ''
 runs:
   using: 'node24'
   main: 'index.js'

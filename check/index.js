@@ -194,8 +194,12 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   const fix = args.includes('--fix');
   const named = args.filter((a) => a !== '--fix');
-  const files = named.length ? named : (process.env.INPUT_FILES ?? 'README.md').split(/\s+/).filter(Boolean);
+  const listed = named.length ? named : (process.env.INPUT_FILES ?? '').split(/\s+/).filter(Boolean);
   const root = process.env.GITHUB_WORKSPACE ?? '.';
+  // with no files listed, the README in the root, whatever its case (README.md, ReadMe.md, ...)
+  const readme = fs.readdirSync(root).find((f) => f.toLowerCase() === 'readme.md');
+  const files = listed.length ? listed : readme ? [readme] : [];
+  if (files.length === 0) console.log('- no README.md, nothing to check');
 
   for (const file of files) {
     const fullPath = path.resolve(root, file);

@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # Check Markdown Table of Contents
 
-A GitHub Action that checks the table of contents of Markdown files (by default `README.md`) is up to date: that it is exactly the one the VS Code extension [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) writes when the file is saved. A pull request that adds, removes or renames a heading without updating the ToC fails, with the ToC it should have in the log.
+A GitHub Action that checks the table of contents of Markdown files (by default the README) is up to date: that it is exactly the one the VS Code extension [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) writes when the file is saved. A pull request that adds, removes or renames a heading without updating the ToC fails, with the ToC it should have in the log.
 
 - [What it checks](#what-it-checks)
 - [Usage](#usage)
@@ -12,7 +12,7 @@ A GitHub Action that checks the table of contents of Markdown files (by default 
 ## What it checks
 
 - The ToC is found as the extension finds it: a top-level list whose first item is a link to a heading (`[...](#...)`) and that is enough like the generated ToC. A list straight after `<!-- no toc -->` is skipped.
-- A file with no ToC passes; there is nothing to keep up to date.
+- A file with no ToC passes; there is nothing to keep up to date. So does a repository with no README, when `files` isn't given. A file that is listed in `files` must exist.
 - The ToC lists every heading, at levels 1 to 6, except those marked `<!-- omit in toc -->` or `<!-- omit from toc -->` (on the line above, or at the end of the heading). Headings in fenced code, front matter and HTML comments are ignored, and setext headings (underlined with `===` or `---`) count.
 - Entries are `- [text](#slug)`, indented two spaces a level under the shallowest heading in the ToC. Slugs are GitHub's, with `-1`, `-2` ... for duplicates.
 
@@ -28,7 +28,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
-      - uses: ConfiguredThings/markdown-toc-action@v1
+      - uses: ConfiguredThings/markdown-toc-action@v2
 ```
 
 ## Fixing a ToC locally
@@ -39,20 +39,20 @@ Save the file in VS Code with Markdown All in One installed (it updates the ToC 
 node check/index.js --fix README.md
 ```
 
-Without `--fix` it checks, exiting with a non-zero status and printing `::error ...` lines, as in a workflow run. It reads its input the way GitHub Actions passes it, so this is the same as the action's default:
+Without `--fix` it checks, exiting with a non-zero status and printing `::error ...` lines, as in a workflow run. It reads its input the way GitHub Actions passes it, so this checks the two files as the action would:
 
 ```sh
-env INPUT_FILES=README.md node check/index.js
+env "INPUT_FILES=README.md docs/UserManual.md" node check/index.js
 ```
 
 ## Inputs
 
 | Name    | Description                                                | Required | Default     |
 |---------|------------------------------------------------------------|----------|-------------|
-| `files` | The Markdown files to check, separated by spaces or new lines | No       | `README.md` |
+| `files` | The Markdown files to check, separated by spaces or new lines | No       | The README in the root, whatever the case of its name (`README.md`, `ReadMe.md`, ...) |
 
 ```yaml
-- uses: ConfiguredThings/markdown-toc-action@v1
+- uses: ConfiguredThings/markdown-toc-action@v2
   with:
     files: |
       README.md
